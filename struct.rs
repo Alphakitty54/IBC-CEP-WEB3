@@ -8,7 +8,6 @@ struct Student {
 fn main() {
     let mut students: Vec<Student> = Vec::new();
 
-    // Adding students to the vector
     students.push(Student {
         name: String::from("Alice"),
         email: String::from("alice@example.com"),
@@ -16,10 +15,8 @@ fn main() {
         id: 1,
     });
 
-    // Add more students here...
 
-    // Accessing a student by index with error handling
-    let index = 2; // Change this to the desired index
+    let index = 2;
     match students.get(index) {
         Some(student) => {
             println!("Student ID: {}", student.id);
