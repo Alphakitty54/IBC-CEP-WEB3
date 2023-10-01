@@ -1,45 +1,49 @@
-use std::io;
+use std::collections::HashMap;
+use std::cmp::Ord;
+use std::hash::Hash; 
 
-fn main() {
-    println!("Simple Calculator");
-    println!("1. Addition");
-    println!("2. Subtraction");
-    println!("3. Multiplication");
-    println!("4. Division");
+struct MyHashMap<K, V> {
+    map: HashMap<K, V>,
+}
 
-    let mut choice = String::new();
-    io::stdin().read_line(&mut choice).expect("Failed to read line");
-    let choice: u32 = choice.trim().parse().expect("Please enter a valid number");
+// Define a trait SortByKey
+trait SortByKey<K, V> {
+    fn sort_by_key(&mut self);
+}
 
-    let mut num1 = String::new();
-    io::stdin().read_line(&mut num1).expect("Failed to read line");
-    let num1: f64 = num1.trim().parse().expect("Please enter a valid number");
+// Implement SortByKey for MyHashMap
+impl<K: Ord + Clone + Hash, V> SortByKey<K, V> for MyHashMap<K, V> {
+    fn sort_by_key(&mut self) {
+        let mut keys: Vec<_> = self.map.keys().cloned().collect();
+        keys.sort();
+        let mut sorted_map = HashMap::new();
 
-    let mut num2 = String::new();
-    io::stdin().read_line(&mut num2).expect("Failed to read line");
-    let num2: f64 = num2.trim().parse().expect("Please enter a valid number");
+        for key in keys {
+            if let Some(value) = self.map.remove(&key) {
+                sorted_map.insert(key, value);
+            }
+        }
 
-    match choice {
-        1 => println!("Result: {}", add(&num1, &num2)),
-        2 => println!("Result: {}", subtract(&num1, &num2)),
-        3 => println!("Result: {}", multiply(&num1, &num2)),
-        4 => println!("Result: {}", divide(&num1, &num2)),
-        _ => println!("Invalid choice"),
+        self.map = sorted_map;
     }
 }
 
-fn add(a: &f64, b: &f64) -> f64 {
-    a + b
-}
+fn main() {
+    // Create a new instance of MyHashMap
+    let mut my_map = MyHashMap {
+        map: HashMap::new(),
+    };
 
-fn subtract(a: &f64, b: &f64) -> f64 {
-    a - b
-}
+    // Add key-value pairs
+    my_map.map.insert(3, "Three");
+    my_map.map.insert(1, "One");
+    my_map.map.insert(2, "Two");
 
-fn multiply(a: &f64, b: &f64) -> f64 {
-    a * b
-}
+    // Sort the map by keys
+    my_map.sort_by_key();
 
-fn divide(a: &f64, b: &f64) -> f64 {
-    a / b
+    // Print the sorted map
+    for (key, value) in &my_map.map {
+        println!("Key: {}, Value: {}", key, value);
+    }
 }
